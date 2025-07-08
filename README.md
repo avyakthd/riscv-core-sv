@@ -22,7 +22,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 - Sample Instruction: `add r2, r0, r1`
 
-## I-Type
+### I-Type
 ![I-Type Instruction Encoding](Images/I_Type.jpg)
 - covers `ADDI`, `ANDI`, `ORI`, `XORI`, `LW` (`SUBI` is just `ADDI` with a -ve `imm_i`).
 - LW format: `mem[R[rs1]+offset] → R[rs2]`
@@ -32,7 +32,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 - Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`. `imm_i` is of size `[11:0]`.
 
-## S-Type
+### S-Type
 ![S-Type Instruction Encoding](Images/S_Type.jpg)
 → covers `SW`. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
 
@@ -41,7 +41,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 - Sample Instruction: `sw r3, r4, imm_s`. `imm_s` is of size `[11:0]`.
 
-## B-Type
+### B-Type
 ![B-Type Instruction Encoding](Images/B_Type.jpg)
 - covers `BEQ`
 
@@ -59,7 +59,7 @@ Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
 
 - Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignemnt
 
-## J-Type
+### J-Type
 ![J-Type Instruction Encoding](Images/U_J_Type.png)
 
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
