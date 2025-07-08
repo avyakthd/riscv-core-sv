@@ -90,5 +90,17 @@ Updates values at every `posedge clk`.
 ### `InstrFile.sv`
 This module initialises the Instruction Memory with aforementioned instructions, and outputs a `32b` instruction when indexed by `PC`. 
 Purely Combinational.
+### `Control_Unit.sv`
+This module generates the following control signals:
+- `RegWrite`  : self-explanatory, just an enable signal
+- `is_R`      : determines whether the second input to the ALU is `imm32` or `R[rs2]`
+- `DataMem_RW`: `Read` and `Write` are mutually-exclusive, so `1b` suffices
+- `MReg`      : determines whether the input to the *write-port* of `Register_File` would be from `DataMem` or `ALU`
 ### `Register_File.sv`
-This 
+This module initialises 32 x `32b` registers, as per the convention in RV32I. The *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `RegWrite` signal is enabled. 
+### `imd_gen.sv`
+This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, and `J-Type` instructions, sign-extends them to `32b`, and gives a single output based on the `opcode` (e.g., only `imm_b`, if `opcode = OP_B`).
+
+### `ALU_Ctl.sv`
+This module generates the control signal `ALU_Op` based on `opcode`, `funct3`, and `funct7` (only for `add`/`sub`). This operation can be `ADD`, `SUB`, `AND`, `OR`, `XOR`.
+
