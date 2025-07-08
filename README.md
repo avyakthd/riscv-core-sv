@@ -18,9 +18,9 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 1. `opcode` → `7’b0110011`
 2. `funct3` → `000` for ADD/SUB, `111` for AND, `110` for OR, `100`for XOR.
-3. `funct7` → distinguishes between ADD/SUB (`0000000` for ADD, `0100000` for SUB)
+3. `funct7` → distinguishes between ADD/SUB (`0000000` for ADD, `0100000` for SUB).
 
-- Sample Instruction: `add r2, r0, r1`;
+- Sample Instruction: `add r2, r0, r1`
 
 ## I-Type
 ![I-Type Instruction Encoding](Images/I_Type.jpg)
@@ -30,34 +30,39 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 1. `opcode` → `7’b0010011`
 2. `funct3` → specifies which immediate operation it is. ADDI: `000`, ANDI: `111`, LW: `010`, XORI: `100`, ORI: `110`
 
-- Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`
+- Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`. `imm_i` is of size `[11:0]`.
+
 ## S-Type
 ![S-Type Instruction Encoding](Images/S_Type.jpg)
-→ covers SW. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too. Memory is byte-addressable.
-3. `opcode` → S-Type → `7’b0100011`
-4. `funct3`→ `010` for SW. Other combinations for SH, SB.
-- I’m assuming the immediate value is split into `imm[11:5]` and `imm[4:0]` to ensure that `rs2`, `rs1`, and `funct3` occupy the same bit-numbers.
-→ Test Instruction: 
-`wire [11:0] imm = 12’h5;`
-`{imm[11:5], 5’h5, 5’h6, F3_LW_SW, imm[4:0], OP_S}`
+→ covers `SW`. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
+
+1. `opcode` → S-Type → `7’b0100011`
+2. `funct3`→ `010` for SW. Other combinations for `SH`, `SB`.
+
+- Sample Instruction: `sw r3, r4, imm_s`. `imm_s` is of size `[11:0]`.
+
 ## B-Type
 ![B-Type Instruction Encoding](Images/B_Type.jpg)
-→ covers BEQ → `funct3 = 000`
-→ `opcode[6:0]` → `7’b1100011`
-- This utilises most of the architecture from the S-Type Instruction.  Let the input to the ALU be in. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
+- covers `BEQ`
+
+ 1. `opcode` → `7’b1100011`
+ 2. `funct3` → `000`. Other combinations for the other branc-variants.
+
+- This utilises most of the architecture from the S-Type Instruction. Let the input to the ALU be `in`. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
 	1. `in[31:12]` = `instr[31]` → in both cases, `[31]` is the MSB and Sign-bit
-	2. `in[11]` = `is_S_type ? instr[31] : instr[7]` → **additional MUX**
+	2. `in[11]` = `is_S_type ? instr[31] : instr[7]` → **additional MUX required**
 	3. `in[10:5]` = `instr[20:25]`, `in[4:1]` = `instr[11:8]` →  in both cases
-	4. `in[0]` = `is_S_type ? instr[7] : 0` →  **additional MUX**
+	4. `in[0]` = `is_S_type ? instr[7] : 0` →  **additional MUX required**
 
 This gives us `13b`, i.e., $\pm$ 4kB of locations to access. This happens to be the page-size in a standard OS, so the designers decided not to include another Branch (`B2`) for the *RV32I* ISA, separately, in an attempt to use the same core for both the compressed (`16b`) and `32b` ISAs. 
 Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
-→  Test Instruction:
-`wire [12:1] imm = 12’h5;`
-`{imm[12], imm[10:5], 5’h7, 5’h8, F3_ADD_SUB_BEQ, imm[4:1], imm[11], OP_B}`
+
+- Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1`.
+
 ## J-Type
-![J-Type Instruction Encoding](Images/J_Type.jpg)
-→ set the value of `rd` to `6’b0` (`x0`)- interpreted as an unconditional branch
+![J-Type Instruction Encoding](Images/J_Type.jpeg)
+- covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
+ set the value of `rd` to `6’b0` (`x0`)- interpreted as an unconditional branch
 → `opcode` → `7’b1101111`
 - The placement of bits again was to reuse every possible pre-existing connection:
 	1. `imm[20]` = `instr[31]` →  again, MSB → sign-bit
