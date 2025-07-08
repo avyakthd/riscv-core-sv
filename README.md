@@ -79,3 +79,9 @@ This gives us a range of $\pm$ 1MB of locations to access.
 
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
+## The Modules
+### `design.sv`
+This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`
+### `riscv_pkg.sv`
+This contains various `enums` and `types` I have defined for convenience and increased readability throughout the code base. 
+### `PC.sv`
