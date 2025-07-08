@@ -85,3 +85,10 @@ This is merely an aggregate of all the modules I've used, and is the only module
 ### `riscv_pkg.sv`
 This contains various `enums` and `types` I have defined for convenience and increased readability throughout the code base. 
 ### `PC.sv`
+This module initialises and updates the `PC` register. It takes in the `imm32` value provided by the `imd_gen.sv` module, and the `PC_sel` control signal, and chooses between branching (`PC + imm32`), and moving on to the next instruction (`PC + 4`).
+Updates values at every `posedge clk`.
+### `InstrFile.sv`
+This module initialises the Instruction Memory with aforementioned instructions, and outputs a `32b` instruction when indexed by `PC`. 
+Purely Combinational.
+### `Register_File.sv`
+This 
