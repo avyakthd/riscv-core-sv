@@ -96,9 +96,11 @@ This module generates the following control signals:
 - `is_R`      : determines whether the second input to the ALU is `imm32` or `R[rs2]`
 - `DataMem_RW`: `Read` and `Write` are mutually-exclusive, so `1b` suffices
 - `MReg`      : determines whether the input to the *write-port* of `Register_File` would be from `DataMem` or `ALU`
+
 Purely combinational.
 ### `Register_File.sv`
-This module initialises 32 x `32b` registers, as per the convention in RV32I. The *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `RegWrite` signal is enabled. 
+This module initialises 32 x `32b` registers, as per the convention in RV32I. 
+The *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `RegWrite` signal is enabled. 
 ### `imd_gen.sv`
 This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, and `J-Type` instructions, sign-extends them to `32b`, and gives a single output based on the `opcode` (e.g., only `imm_b`, if `opcode = OP_B`).
 Purely combinational.
@@ -106,7 +108,8 @@ Purely combinational.
 This module generates the control signal `ALU_Op` based on `opcode`, `funct3`, and `funct7` (only for `add`/`sub`). This operation can be `ADD`, `SUB`, `AND`, `OR`, `XOR`.
 Purely combinational.
 ### `ALU.sv`
-This module perform the action specified by `ALU_Op` on the inputs `R[rs1]`, and either of `imm32` and `R[rs2]`, based on `is_R`
+This module perform the action specified by `ALU_Op` on the inputs `R[rs1]`, and either of `imm32` and `R[rs2]`, based on `is_R`.
+Purely Combinational.
 ### `DataFile.sv`
 This module takes in inputs from the `ALU` and from the `Register_File` modules, and performs either *read* or *write* operations (for `LW` and `SW`) based on the value of `DataMem_RW`. Then, it proceeds to generate a `32b` input to `Register_File`'s *write-port* based on the value of `MReg`: can either be the Data-memory's output or the ALU's output that was provided to it.
-
+Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `DataMem_RW == Write`.
