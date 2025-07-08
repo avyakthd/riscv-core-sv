@@ -1,9 +1,6 @@
-// Code your testbench here
-// or browse Examples
 `timescale 1ns/1ps
 import riscv_pkg::*;
 
-//`include "alu_tb.sv"
 module tb;
   
   // inputs and outputs
@@ -37,6 +34,7 @@ module tb;
   ALU u2 (.Rs1(Rs1), .Rs2(Rs2), .imm32(imm32), .is_R(is_R), .ALU_Op(ALU_Op), .ALU_Result(ALU_Result), .is_equal(is_equal));
   
   PC u3 (.clk(clk), .PC_sel(PC_sel), .imm32 (imm32 ), .PC_Out (PC_Out), .is_equal(is_equal)); 
+  
   Register_File u4(.clk(clk), .RegWrite(RegWrite), .rs1(rs1), .rs2(rs2), .rd(rd), .Rd(Rd), .Rs1(Rs1), .Rs2(Rs2));
   
   InstrFile u5 (.PC_Out (PC_Out ), .Instr_Out (Instr_Out ), .rs1(rs1), .rs2(rs2), .rd(rd), .opcode(opcode), .funct3(funct3), .funct7(funct7));
