@@ -81,6 +81,10 @@ This gives us a range of ±1MB of locations to access.
 ## The Modules
 ### `design.sv`
 This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`
+### `single_cycle_tb.sv`
+This executes all the sample instructions mentioned above, and displays their outputs in the command line. 
+If you wish to view the waveforms using GTKWave, or any other tool, uncomment the code-snippet present in the file.
+If using EDAPlayground, copy-paste the contents of this file into `testbench.sv`.
 ### `riscv_pkg.sv`
 This contains various `enums` and `types` I have defined for convenience and increased readability throughout the code base. 
 ### `PC.sv`
