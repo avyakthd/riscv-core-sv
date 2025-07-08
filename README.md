@@ -57,10 +57,10 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 This gives us `13b`, i.e., $\pm$ 4kB of locations to access. This happens to be the page-size in a standard OS, so the designers decided not to include another Branch (`B2`) for the *RV32I* ISA, separately, in an attempt to use the same core for both the compressed (`16b`) and `32b` ISAs. 
 Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
 
-- Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1`.
+- Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignemnt
 
 ## J-Type
-![J-Type Instruction Encoding](Images/J_Type.jpeg)
+![J-Type Instruction Encoding](Images/U_J_Type.png)
 
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
  set the value of `rd` to `6’b0` (`x0`)- interpreted as an unconditional branch
@@ -68,15 +68,14 @@ Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
  1. `opcode` → `7’b1101111`
  2. No `funct3`
 
-
-- The placement of bits again was to reuse every possible pre-existing connection:
+- The placement of bits, again, was to reuse every possible pre-existing connection:
 	1. `imm[20]` = `instr[31]` →  again, MSB → sign-bit
 	2. `imm[10:1]` = `instr[30:21]`→ shares that part in common with I-Type’s `imm[11:0]`
 	3. `imm[19:12]` = `instr[19:12]` →  shares this in common with U-type’s `imm[31:12]`
 	4. `rd (instr[11:7]), opcode[6:0]`→ same for all instructions
 	5. `imm[11] = instr[20]` → remaining bit- inserted in the empty slot
+
 This gives us a range of $\pm$ 1MB of locations to access. 
-→ Test instruction:
-`wire [20:1] imm = 20’h5;`
-`{imm[20], imm[10:1], imm[11], imm[19:12], 5’h9, OP_J}`
+
+- Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
