@@ -55,7 +55,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 	4. `in[0]` = `is_S_type ? instr[7] : 0` →  **additional MUX required**
 
 This gives us `13b`, i.e., $\pm$ 4kB of locations to access. This happens to be the page-size in a standard OS, so the designers decided not to include another Branch (`B2`) for the *RV32I* ISA, separately, in an attempt to use the same core for both the compressed (`16b`) and `32b` ISAs. 
-Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
+Can it be done, however? Absolutely- [B2 for the RV32I ISA](B2_instr.md)
 
 - Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignemnt
 
