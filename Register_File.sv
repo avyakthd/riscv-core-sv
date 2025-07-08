@@ -14,7 +14,7 @@ module Register_File (
 );
   
   // create a memory array 
-  logic [31:0] RegMem [31:0];
+  logic [31:0] RegMem `reg_size;
   initial
     foreach (RegMem[i])
       RegMem[i] = i; 
