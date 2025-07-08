@@ -18,8 +18,8 @@ module InstrFile (
   
   localparam  [11:0] imm_i = 12'h5;
   localparam  [11:0] imm_s = 12'h5;
-  localparam  [12:1] imm_b = 12'h6; // 6<<1 = 10
-  localparam  [20:1] imm_j = 20'h6; // 6<<1 = 10
+  localparam  [12:1] imm_b = 12'h6; // 6<<1 = 12
+  localparam  [20:1] imm_j = 20'h6; // 6<<1 = 12
   
   initial begin // initialisations for now 
     // R-Type: Add
@@ -55,7 +55,7 @@ module InstrFile (
     
     // dummy 
     {InstrMem[43], InstrMem[42] , InstrMem[41], InstrMem[40]}= 
-    32'hA_cafe_fed_a_deaf_cab; 
+    32'hA_deaf_cab; 
   end
   
   always_comb 
