@@ -27,7 +27,7 @@ module Register_File (
   
   // Write
   always_ff @(posedge clk) begin
-    if (RegWrite) 
+    if (RegWrite && rd != 0) 
       RegMem[rd] <= Rd;
   end
 
