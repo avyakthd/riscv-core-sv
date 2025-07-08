@@ -61,9 +61,14 @@ Can it be done, however? Absolutely- [[B2 for the RV32I ISA]]
 
 ## J-Type
 ![J-Type Instruction Encoding](Images/J_Type.jpeg)
+
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
  set the value of `rd` to `6’b0` (`x0`)- interpreted as an unconditional branch
-→ `opcode` → `7’b1101111`
+
+ 1. `opcode` → `7’b1101111`
+ 2. No `funct3`
+
+
 - The placement of bits again was to reuse every possible pre-existing connection:
 	1. `imm[20]` = `instr[31]` →  again, MSB → sign-bit
 	2. `imm[10:1]` = `instr[30:21]`→ shares that part in common with I-Type’s `imm[11:0]`
