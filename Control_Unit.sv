@@ -60,7 +60,7 @@ module Control_Unit (
       	RegWrite = 0;
         DataMem_RW = Read;
         MReg = from_ALU;
-        PC_sel = PC_4; // important to debug, so "x" here alone.
+        PC_sel = PC_4; // proceed to next instruction
         is_R = 0; 
       end
     endcase
