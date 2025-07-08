@@ -1,6 +1,6 @@
 # RV32I Single-cycle processor
 ## My Goal
-- To implement a basic set of Arithmetic and Load/Store operations:
+- To implement a basic set of Arithmetic, Load/Store, and Branch operations:
 	- ALU Operations: `ADD`, `SUB`, `AND`, `OR`, `XOR`
 	- Immediate Operations: `ADDI`, `ANDI`, `ORI`, `XORI`
 	- Load/Store: `LW`, `SW`
