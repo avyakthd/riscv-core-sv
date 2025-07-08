@@ -28,7 +28,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - LW format: `mem[R[rs1]+offset] → R[rs2]`
 
 1. `opcode` → `7’b0010011`
-2. `funct3` → specifies which immediate operation it is. ADDI: `3'b000`, ANDI: `3'b111`, LW: `3'b010`, XORI: `3'b100`, ORI: `3'b110`
+2. `funct3` → specifies which immediate operation it is. `ADDI`: `3'b000`, `ANDI`: `3'b111`, `LW`: `3'b010`, `XORI`: `3'b100`, `ORI`: `3'b110`
 
 - Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`. `imm_i` is of size `[11:0]`.
 
