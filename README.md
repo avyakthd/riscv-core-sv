@@ -34,7 +34,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 ### S-Type
 ![S-Type Instruction Encoding](Images/S_Type.jpg)
-→ covers `SW`. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
+→ covers `SW`. Performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
 
 1. `opcode` → S-Type → `7’b0100011`
 2. `funct3`→ `3'b010` for SW. Other combinations for `SH`, `SB`.
