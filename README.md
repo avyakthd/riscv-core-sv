@@ -46,7 +46,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - covers `BEQ`
 
  1. `opcode` → `7’b1100011`
- 2. `funct3` → `3'b000`. Other combinations for the other branc-variants.
+ 2. `funct3` → `3'b000`. Other combinations for the other branch-variants.
 
 - This utilises most of the architecture from the S-Type Instruction. Let the input to the ALU be `in`. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
 	1. `in[31:12]` = `instr[31]` → in both cases, `[31]` is the MSB and Sign-bit
