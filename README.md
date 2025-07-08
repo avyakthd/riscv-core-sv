@@ -17,8 +17,8 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - covers `ADD`, `SUB`, `AND`, `OR`, `XOR`
 
 1. `opcode` → `7’b0110011`
-2. `funct3` → `000` for ADD/SUB, `111` for AND, `110` for OR, `100`for XOR.
-3. `funct7` → distinguishes between ADD/SUB (`0000000` for ADD, `0100000` for SUB).
+2. `funct3` → `3'b000` for `ADD`/`SUB`, `111` for `AND`, `110` for `OR`, `100`for `XOR`.
+3. `funct7` → distinguishes between ADD/SUB (`7'b0000000` for ADD, `7'b0100000` for SUB).
 
 - Sample Instruction: `add r2, r0, r1`
 
@@ -28,7 +28,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - LW format: `mem[R[rs1]+offset] → R[rs2]`
 
 1. `opcode` → `7’b0010011`
-2. `funct3` → specifies which immediate operation it is. ADDI: `000`, ANDI: `111`, LW: `010`, XORI: `100`, ORI: `110`
+2. `funct3` → specifies which immediate operation it is. ADDI: `3'b000`, ANDI: `3'b111`, LW: `3'b010`, XORI: `3'b100`, ORI: `3'b110`
 
 - Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`. `imm_i` is of size `[11:0]`.
 
@@ -37,7 +37,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 → covers `SW`. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
 
 1. `opcode` → S-Type → `7’b0100011`
-2. `funct3`→ `010` for SW. Other combinations for `SH`, `SB`.
+2. `funct3`→ `3'b010` for SW. Other combinations for `SH`, `SB`.
 
 - Sample Instruction: `sw r3, r4, imm_s`. `imm_s` is of size `[11:0]`.
 
@@ -46,13 +46,13 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - covers `BEQ`
 
  1. `opcode` → `7’b1100011`
- 2. `funct3` → `000`. Other combinations for the other branc-variants.
+ 2. `funct3` → `3'b000`. Other combinations for the other branc-variants.
 
 - This utilises most of the architecture from the S-Type Instruction. Let the input to the ALU be `in`. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
 	1. `in[31:12]` = `instr[31]` → in both cases, `[31]` is the MSB and Sign-bit
 	2. `in[11]` = `is_S_type ? instr[31] : instr[7]` → **additional MUX required**
 	3. `in[10:5]` = `instr[20:25]`, `in[4:1]` = `instr[11:8]` →  in both cases
-	4. `in[0]` = `is_S_type ? instr[7] : 0` →  **additional MUX required**
+	4. `in[0]` = `is_S_type ? instr[7] : 1'b0` →  **additional MUX required**
 
 This gives us `13b`, i.e., $\pm$ 4kB of locations to access. This happens to be the page-size in a standard OS, so the designers decided not to include another Branch (`B2`) for the *RV32I* ISA, separately, in an attempt to use the same core for both the compressed (`16b`) and `32b` ISAs. 
 Can it be done, however? Absolutely- [B2 for the RV32I ISA](B2_instr.md)
@@ -63,7 +63,6 @@ Can it be done, however? Absolutely- [B2 for the RV32I ISA](B2_instr.md)
 ![J-Type Instruction Encoding](Images/U_J_Type.png)
 
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
- set the value of `rd` to `6’b0` (`x0`)- interpreted as an unconditional branch
 
  1. `opcode` → `7’b1101111`
  2. No `funct3`
@@ -113,3 +112,12 @@ Purely Combinational.
 ### `DataFile.sv`
 This module takes in inputs from the `ALU` and from the `Register_File` modules, and performs either *read* or *write* operations (for `LW` and `SW`) based on the value of `DataMem_RW`. Then, it proceeds to generate a `32b` input to `Register_File`'s *write-port* based on the value of `MReg`: can either be the Data-memory's output or the ALU's output that was provided to it.
 Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `DataMem_RW == Write`.
+
+## Basic Timing Checks
+While I have not synthesised this model and run timing-analyses on them myself, these are some back-of-the-envelope checks that you can use to ensure proper functioning. 
+### Max-delay/ Setup-time constraint
+This would be the path from the Instruction-Memory to the Register-File via the ALU and Data-Memory during in `LW` instruction
+Let 
+$ T_{pd\_total} = T_{pd\_InstrMem} + T_{pd\_RegFile} + T_{pd\_alu} \text{ (includes ALU mux)} + T_{pd\_DataMem} + T_{pd\_mux} \text{(mreg)} $
+then,
+$ \large T_{clk} \;-\;T_{skew} \ge T_{pcq\_PC} \; + \; T_{pd,\;total} + T_{su\_RegFile} $
