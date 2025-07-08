@@ -14,18 +14,23 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 
 ###  R-Type
 ![R-Type Instruction Encoding](Images/R_Type.jpg)
-→ covers ADD, SUB, AND, OR, XOR
-1. `opcode[6:0]`→ R-Type → `7’b0110011`
-2. `funct3`→ `000` for ADD/SUB, `111` for AND, `110` for OR, `100`for XOR.
+- covers `ADD`, `SUB`, `AND`, `OR`, `XOR`
+
+1. `opcode` → `7’b0110011`
+2. `funct3` → `000` for ADD/SUB, `111` for AND, `110` for OR, `100`for XOR.
 3. `funct7` → distinguishes between ADD/SUB (`0000000` for ADD, `0100000` for SUB)
-→  Test Instruction: `{F7_ADD, 5’b1, 5’b0, F3_ADD_SUB_BEQ, 5’h2, OP_R}`
+
+- Sample Instruction: `add r2, r0, r1`;
+
 ## I-Type
 ![I-Type Instruction Encoding](Images/I_Type.jpg)
-→ covers ADDI, ANDI, ORI, XORI, LW (SUBI is just ADDI with a -ve `imm`).
-→ LW: `mem[R[rs1]+offset] → R[rs2]`.
-1. `opcode[6:0]`→ I-Type → `7’b0010011`
-2. `funct3`→ specifies which immediate operation it is. ADDI: `000`, ANDI: `111`, LW: `010`, XORI: `100`, ORI: `110`
-→ Test Instruction: `{12’h5, 5’h3, F3_OR, 5’h4, OP_I}`
+- covers `ADDI`, `ANDI`, `ORI`, `XORI`, `LW` (`SUBI` is just `ADDI` with a -ve `imm_i`).
+- LW format: `mem[R[rs1]+offset] → R[rs2]`
+
+1. `opcode` → `7’b0010011`
+2. `funct3` → specifies which immediate operation it is. ADDI: `000`, ANDI: `111`, LW: `010`, XORI: `100`, ORI: `110`
+
+- Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`
 ## S-Type
 ![S-Type Instruction Encoding](Images/S_Type.jpg)
 → covers SW. performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too. Memory is byte-addressable.
