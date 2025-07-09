@@ -117,7 +117,7 @@ This module perform the action specified by `ALU_Op` on the inputs `R[rs1]`, and
 Purely Combinational.
 ### `DataFile.sv`
 This module takes in inputs from the `ALU` and from the `Register_File` modules, and performs either *read* or *write* operations (for `LW` and `SW`) based on the value of `DataMem_RW`. Then, it proceeds to generate a `32b` input to `Register_File`'s *write-port* based on the value of `MReg`: can either be the Data-memory's output or the ALU's output that was provided to it.
-Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if the `DataMem_RW == Write`.
+Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if `DataMem_RW == Write`.
 
 ## Basic Timing Checks
 While I have not synthesised this model and run timing-analyses on them myself, these are some back-of-the-envelope checks that you can use to ensure proper functioning. Note that any subscript of *p* would mean it's *propagation-delay* (longest path), and *c* would mean *contamination-delay* (shortest path)
