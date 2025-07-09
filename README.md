@@ -121,9 +121,9 @@ Similar to `Register_File`, the *read* operation is purely combinational, wherea
 
 ## Basic Timing Checks
 While I have not synthesised this model and run timing-analyses on them myself, these are some back-of-the-envelope checks that you can use to ensure proper functioning. Note that any subscript of *p* means *propagation-delay* (longest path), and *c* means *contamination-delay* (shortest path)
-### Max-delay/ Setup-time constraint
+### Max-delay / Setup-time constraint
 
-This would be the path from `InstrMem` to `Register_File` via `ALU` and `DataFile` during in `LW` instruction.
+This would be the path from `InstrMem` to `Register_File` via `ALU` and `DataFile` during an `LW` instruction.
 
 <p>
 Let T<sub>pd_total</sub> = T<sub>pd_InstrMem</sub> + T<sub>pd_RegFile</sub> + T<sub>pd_alu</sub> (includes ALU mux) + T<sub>pd_DataMem</sub> + T<sub>pd_mux</sub> (Mreg-MUX)
@@ -134,14 +134,19 @@ T<sub>clk</sub> &minus; T<sub>skew</sub> &ge; T<sub>pcq_PC</sub> + T<sub>pd_tota
 </p>
 <p>
 or,<br>
-T<sub>pd_total</sub> &le; T<sub>clk</sub> &minus; T<sub>skew</sub> &minus; (T<sub>pcq_PC</sub> + T<sub>su_RegFile</sub>)
+T<sub>pd_total</sub> &le; T<sub>clk</sub> &minus; T<sub>skew</sub> &minus; (T<sub>pcq_PC</sub> + T<sub>su_RegFile</sub>) &rarr; <b>Max-delay</b>
 </p>
 
-### Min-delay/ Hold-time constraint
+### Min-delay / Hold-time constraint
 
 <p>
 The shortest path for data to race through would be from <code>PC</code> to itself, i.e., along the <code>PC &larr; PC + 4</code> route. Since this contains only one memory element, there won't be any effect of <i>skew</i>:
 </p>
 <p>
-T<sub>ccq_PC</sub> + T<sub>cd_PC_Adder</sub> &ge; T<sub>hold_PC</sub> + T<sub>skew</sub>
+T<sub>hold_PC</sub> &le; T<sub>ccq_PC</sub> + T<sub>cd_PC_Adder</sub>
 </p>
+<p>
+or,<br>
+T<sub>cd_PC_Adder</sub> &ge; T<sub>hold_PC</sub> &minus; T<sub>ccq_PC</sub> &rarr; <b>Min-delay</b>
+</p>
+
