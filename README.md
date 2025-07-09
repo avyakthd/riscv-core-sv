@@ -37,7 +37,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 → covers `SW`. Performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates SH and SB, too (memory is byte-addressable). However, I shall only use `SW`.
 
 1. `opcode` → S-Type → `7’b0100011`
-2. `funct3`→ `3'b010` for SW. Other combinations for `SH`, `SB`.
+2. `funct3`→ `3'b010` for `SW`. Other combinations for `SH`, `SB`.
 
 - Sample Instruction: `sw r3, r4, imm_s`. `imm_s` is of size `[11:0]`.
 
@@ -48,7 +48,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
  1. `opcode` → `7’b1100011`
  2. `funct3` → `3'b000`. Other combinations for the other branch-variants.
 
-- This utilises most of the architecture from the S-Type Instruction. Let the input to the ALU be `in`. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
+- This utilises most of the architecture from the `S-Type` Instruction. Let the input to the ALU be `in`. In that case, since `opcode[S]` and `opcode[B]` are mutually exclusive,
 	1. `in[31:12]` = `instr[31]` → in both cases, `[31]` is the MSB and Sign-bit
 	2. `in[11]` = `is_S_type ? instr[31] : instr[7]` → **additional MUX required**
 	3. `in[10:5]` = `instr[20:25]`, `in[4:1]` = `instr[11:8]` →  in both cases
@@ -67,7 +67,7 @@ Can it be done, however? Absolutely- [B2 for the RV32I ISA](B2_instr.md)
  1. `opcode` → `7’b1101111`
  2. No `funct3`
 
-- The placement of bits, again, was to reuse every possible pre-existing connection:
+- The placement of bits, again, was to reuse every possible pre-existing connection (from `U-Type`, this time):
 	1. `imm[20]` = `instr[31]` →  again, MSB → sign-bit
 	2. `imm[10:1]` = `instr[30:21]`→ shares that part in common with I-Type’s `imm[11:0]`
 	3. `imm[19:12]` = `instr[19:12]` →  shares this in common with U-type’s `imm[31:12]`
