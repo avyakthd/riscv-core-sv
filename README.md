@@ -120,7 +120,7 @@ This module takes in inputs from the `ALU` and from the `Register_File` modules,
 Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if `DataMem_RW == Write`.
 
 ## Basic Timing Checks
-While I have not synthesised this model and run timing-analyses on them myself, these are some back-of-the-envelope checks that you can use to ensure proper functioning. Note that any subscript of *p* would mean it's *propagation-delay* (longest path), and *c* would mean *contamination-delay* (shortest path)
+While I have not synthesised this model and run timing-analyses on them myself, these are some back-of-the-envelope checks that you can use to ensure proper functioning. Note that any subscript of *p* means *propagation-delay* (longest path), and *c* means *contamination-delay* (shortest path)
 ### Max-delay/ Setup-time constraint
 
 This would be the path from `InstrMem` to `Register_File` via `ALU` and `DataFile` during in `LW` instruction.
