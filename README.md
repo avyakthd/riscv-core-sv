@@ -79,6 +79,8 @@ This gives us a range of ±1MB of locations to access.
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
 ## The Modules
+Attached below is an image of the datapath implemented by these modules.
+![single-cycle-datapath](Images/Single_Cycle_Datapath.jpeg)
 ### `design.sv`
 This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`
 ### `single_cycle_tb.sv`
