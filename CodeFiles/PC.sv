@@ -6,12 +6,11 @@ module PC (
   // control signal
   input PC_sel_e PC_sel,
   // from ALU
-  input logic is_equal,
+  input logic branch_taken,
   // from imd_gen
   input `reg_size imm32,
   // to InstrFile
-  output wire `reg_size PC_Out  // needs to be wire- "assign PC_Out = PC;"
-);
+  output wire `reg_size PC_Out
  
   logic `reg_size PC = 0; // set @ initial 
   assign PC_Out  = PC; 
@@ -20,7 +19,7 @@ module PC (
     case (PC_sel) 
       PC_4    : PC <= PC + 4;
       PC_BEQ: begin
-        case (is_equal)
+        case (branch_taken)
           0: PC <= PC + 4;
           1: PC <= PC + imm32;
         endcase
