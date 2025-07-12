@@ -6,7 +6,7 @@ module tb;
   // inputs and outputs
   logic clk;
   PC_sel_e PC_sel;
-  logic is_equal; 
+  logic branch_taken; 
   logic `reg_size Rs1, Rs2, imm32; 
   logic `reg_size PC_Out; 
   
@@ -31,13 +31,13 @@ module tb;
   // module instantiation
   ALU_Ctl u1 (.opcode(opcode), .funct7(funct7), .funct3(funct3), .ALU_Op(ALU_Op));
   
-  ALU u2 (.Rs1(Rs1), .Rs2(Rs2), .imm32(imm32), .is_R(is_R), .ALU_Op(ALU_Op), .ALU_Result(ALU_Result), .is_equal(is_equal));
+  ALU u2 (.Rs1(Rs1), .Rs2(Rs2), .imm32(imm32), .is_R(is_R), .ALU_Op(ALU_Op), .ALU_Result(ALU_Result), .branch_taken(branch_taken));
   
-  PC u3 (.clk(clk), .PC_sel(PC_sel), .imm32 (imm32 ), .PC_Out (PC_Out), .is_equal(is_equal)); 
+  PC u3 (.clk(clk), .PC_sel(PC_sel), .imm32(imm32 ), .PC_Out(PC_Out), .branch_taken(branch_taken)); 
   
   Register_File u4(.clk(clk), .RegWrite(RegWrite), .rs1(rs1), .rs2(rs2), .rd(rd), .Rd(Rd), .Rs1(Rs1), .Rs2(Rs2));
   
-  InstrFile u5 (.PC_Out (PC_Out ), .Instr_Out (Instr_Out ), .rs1(rs1), .rs2(rs2), .rd(rd), .opcode(opcode), .funct3(funct3), .funct7(funct7));
+  InstrFile u5 (.PC_Out(PC_Out ), .Instr_Out(Instr_Out ), .rs1(rs1), .rs2(rs2), .rd(rd), .opcode(opcode), .funct3(funct3), .funct7(funct7));
   
   imd_gen u6 (.Instr_Out(Instr_Out), .imm32(imm32));
   
