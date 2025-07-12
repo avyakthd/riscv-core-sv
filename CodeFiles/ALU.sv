@@ -9,7 +9,7 @@ module ALU (
   	// from ALU_Ctl
     input alu_op_e ALU_Op,
     // to PC
-    output logic is_equal,
+    output logic branch_taken,
   	// to DataFile, DataFile->MUX_MReg
     output logic `reg_size ALU_Result // needs to be logic, used inside always_comb
 );
@@ -22,7 +22,7 @@ module ALU (
       ADD : ALU_Result = ALU_inA + ALU_inB;
       SUB : begin
         ALU_Result = ALU_inA - ALU_inB;
-        is_equal = (ALU_Result == 0) ? 1 : 0;
+        branch_taken = (ALU_Result == 0) ? 1 : 0;
       end
       AND : ALU_Result = ALU_inA & ALU_inB;
       OR  : ALU_Result = ALU_inA | ALU_inB;
