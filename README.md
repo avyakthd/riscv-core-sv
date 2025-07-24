@@ -6,17 +6,15 @@
 	- Load/Store: `LW`, `SW`
 	- Branches: `BEQ`, `J` (Unconditional Branch)
 - To implement Data-forwarding from both the `EX-MEM` and `MEM-WB` stages to reduce stalls and improve throughput
-- To implement a Hazard-unit to prevent `RAW` hazards following a `LW` where Data-forwarding would not apply
-- To test the core on a set of instructions that cover all bases, and display the relevant information in an understandable, step-by-step manner
-- What I can work with: a Program-Counter, 32 x `32b` registers, Instruction and Data Memories, a main Control-Unit and other sub-components, a Forwarding-Unit, a Hazard-Unit, and an Immediate-Generator unit
-- A sample testbench that you can use to evaluate these on your own is provided in [testbench.sv](CodeFiles/testbench.sv). Details on how to use it are mentioned here // attach link once done
+- To implement a Hazard-unit to prevent `RAW` hazards following `LW` instructions not solved by Data-forwarding
+- To provide a [sample testbench](CodeFiles/testbench.sv) to verify the core on a comprehensive instruction set, with step-by-step output for easy understanding. More on this [later](#testbenchsv)
 
 ## The ISA
 I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement the mentioned instructions.
 
 
 ###  R-Type
-![R-Type Instruction Encoding](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/Images/R_Type.jpg)
+![R-Type Instruction Encoding](Images/R_Type.jpg)
 - covers `ADD`, `SUB`, `AND`, `OR`, `XOR`
 
 1. `opcode` → `7’b0110011`
@@ -26,7 +24,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - Sample Instruction: `add r2, r0, r1`
 
 ### I-Type
-![I-Type Instruction Encoding](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/Images/I_Type.jpg)
+![I-Type Instruction Encoding](Images/I_Type.jpg)
 - covers `ADDI`, `ANDI`, `ORI`, `XORI`, `LW` (`SUBI` is just `ADDI` with a -ve `imm_i`).
 - LW format: `mem[R[rs1]+offset] → R[rs2]`
 
@@ -36,7 +34,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - Sample Instructions: `ori r3, r2, imm_i`, `lw r5, r4, imm_i`. `imm_i` is of size `[11:0]`.
 
 ### S-Type
-![S-Type Instruction Encoding](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/Images/S_Type.jpg)
+![S-Type Instruction Encoding](Images/S_Type.jpg)
 → covers `SW`. Performs `mem[R[rs1] + offset] ← R[rs2]`. The reason that offset isn’t word (`32b`) assigned mandatorily is since the same `opcode` accommodates `SH` and `SB`, too (memory is byte-addressable). However, I shall only use `SW`.
 
 1. `opcode` → S-Type → `7’b0100011`
@@ -45,7 +43,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 - Sample Instruction: `sw r3, r4, imm_s`. `imm_s` is of size `[11:0]`.
 
 ### B-Type
-![B-Type Instruction Encoding](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/Images/B_Type.jpg)
+![B-Type Instruction Encoding](Images/B_Type.jpg)
 - covers `BEQ`
 
  1. `opcode` → `7’b1100011`
@@ -63,7 +61,7 @@ Can it be done, however? Absolutely- [B2 for the RV32I ISA](https://github.com/a
 - Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignemnt
 
 ### J-Type
-![J-Type Instruction Encoding](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/Images/U_J_Type.png)
+![J-Type Instruction Encoding](Images/U_J_Type.png)
 
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
 
@@ -81,4 +79,18 @@ This gives us a range of ±1MB of locations to access.
 
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
-// work in progress... 
+## The Modules
+### `design.sv`
+### `riscv_pkg.sv`
+### `PC.sv`
+### `InstrFile.sv`
+### `Top.sv`
+### `Control_Unit.sv`
+### `ALU_Ctl.sv`
+### `imd_gen.sv`
+### `Register_File.sv`
+### `Hazard_Unit.sv`
+### `Forwarding_Unit.sv`
+### `ALU.sv`
+### `DataFile.sv`
+### `testbench.sv`
