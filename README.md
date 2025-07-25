@@ -123,7 +123,7 @@ This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, an
 ### `Register_File.sv`
 This module initialises 32 x `32b` registers, as per the convention in RV32I. The read operation is purely combinational, whereas the write operation is triggered at posedge clk, if the RegWrite signal is enabled. The debug-signal `debug_addr_RF`, and its output `debug_data_RF` would help us evaluate our design.
 
-> Read: Purely Combinational
+> Read: Purely Combinational  
 > Write: Clock-triggered
 ### `Hazard_Unit.sv`
 A Load-use (`RAW`) hazard occurs when a `Load` instruction is followed by any instruction that depends on its destination register (`rd`). This cannot be resolved by simple Data-Forwarding, and would require a `Stall`, during which the `Load` proceeds through the pipeline, while the dependent instruction is halted. 
@@ -132,6 +132,13 @@ This module implements that hazard-detection by asserting `Stall` when the `rd` 
 
 > Purely Combinational
 ### `Forwarding_Unit.sv`
+`RAW` hazards can occur when a subsequent instruction requires the value of the destination-register (`R[rd]`), before that value has been written back (in the `WB` stage). To resolve this without `Stall`s, we forward the `ALU_Result` directly from the `EX_MEM_R` and `MEM_WB_R` pipeline-registers to the `ALU`'s inputs.
+
+This module checks the dependencies between the source-registers (`rs1`, `rs2`) and destination-registers (`EX_MEM_R.rd` and `MEM_WB_R.rd`) and asserts the forwarding signals to the `ALU` (`ForwardA`, `ForwardB`). 
+
+> Purely Combinational
 ### `ALU.sv`
+
+
 ### `DataFile.sv`
 ### `testbench.sv`
