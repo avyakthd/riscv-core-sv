@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 import riscv_pkg::*;
 
+//ID EX should have the bubbling implemented
 
 module Top (
   input clk,
@@ -14,7 +15,7 @@ module Top (
   /* PIPELINE REGISTER DECLARATION */
   /* ----------------------------- */ 
 
-  IF_ID_t   IF_ID_R;
+  IF_ID_t 	IF_ID_R;
   ID_EX_t   ID_EX_R;
   EX_MEM_t  EX_MEM_R;
   MEM_WB_t  MEM_WB_R;
@@ -26,7 +27,7 @@ module Top (
   logic `reg_size PC_Out, Instr_Out;
   logic `reg_size PC_next, PC_4, PC_branch;
   logic branch_taken;
-  logic Stall, Flush;
+  logic Stall; // for the first instruction
   opcode_e opcode;
   funct3_e funct3;
   funct7_e funct7;
@@ -44,9 +45,10 @@ module Top (
   logic `reg_size Rs2_imm32;
   logic `reg_size ALU_Result;
   logic is_equal;
+  logic Flush;
   logic `reg_size Rd;
   logic `reg_size Rs2_fwd;
-
+  logic uses_rs1, uses_rs2; 
 
   /*----------------------*/  
   /* MODULE INSTANTIATION */
@@ -83,8 +85,9 @@ module Top (
   Hazard_Unit uHU (
     .MReg(ID_EX_R.MReg),
     .rd(ID_EX_R.rd),
-    .rs1(rs1), 
-    .rs2(rs2),
+    .rs1(rs1), .rs2(rs2),
+    .uses_rs1(uses_rs1), 
+    .uses_rs2(uses_rs2),
     .Stall(Stall)
   );
 
@@ -165,8 +168,6 @@ module Top (
 
   assign Rs2_imm32 = ID_EX_R.is_R ? ID_EX_R.Rs2 : ID_EX_R.imm32;
 
-  // EX //
-
   assign Flush = 
     ((ID_EX_R.PC_sel == PC_BEQ) & (is_equal)) || 
     (ID_EX_R.PC_sel == PC_J);
@@ -178,6 +179,23 @@ module Top (
       from_ex_mem: Rs2_fwd = EX_MEM_R.ALU_Result;
       from_mem_wb: Rs2_fwd = MEM_WB_R.Rd;
     endcase
+
+  // ----------- //
+  // STALL LOGIC //
+  // ----------- //
+
+  always_comb begin
+    case (opcode)
+      OP_R, OP_I, OP_S, OP_B: begin
+        uses_rs1 = 1;
+        uses_rs2 = (opcode != OP_I);
+      end
+      default: begin // OP_J
+        uses_rs1 = 0;
+        uses_rs2 = 0;
+      end
+    endcase
+  end
 
   // ---------------- //
   // PC Control Logic //
@@ -200,9 +218,7 @@ module Top (
   //IF_ID
   //always_ff @ (posedge clk) begin -> not working for some reason :(
   always @ (posedge clk) begin 
-    if (rst)
-      IF_ID_R <= 0;
-    else if (Flush) 
+    if (Flush) 
       IF_ID_R <= 0;
     else if (~Stall) begin
       IF_ID_R.PC <= PC_Out;
@@ -213,9 +229,7 @@ module Top (
   // ID_EX
   //always_ff @(posdege clk) begin
   always @ (posedge clk) begin 
-    if (rst)
-      ID_EX_R <= 0;
-    else if (Flush || Stall) begin // Flush takes priority over Stall
+    if (Flush || Stall) begin // Flush takes priority over Stall
       ID_EX_R.RegWrite <= 0;
       ID_EX_R.DataMem_RW <= Read;
       ID_EX_R.rd <= 0; 
@@ -241,28 +255,20 @@ module Top (
   // EX_MEM
   //always_ff @(posedge clk) begin
   always @ (posedge clk) begin 
-    if (rst) 
-      EX_MEM_R <= 0;
-    else begin
-      EX_MEM_R.ALU_Result <= ALU_Result;
-      EX_MEM_R.DataMem_RW <= ID_EX_R.DataMem_RW;
-      EX_MEM_R.MReg <= ID_EX_R.MReg;
-      EX_MEM_R.Rs2 <= Rs2_fwd;
-      EX_MEM_R.RegWrite <= ID_EX_R.RegWrite;
-      EX_MEM_R.rd <= ID_EX_R.rd;
-    end
+    EX_MEM_R.ALU_Result <= ALU_Result;
+    EX_MEM_R.DataMem_RW <= ID_EX_R.DataMem_RW;
+    EX_MEM_R.MReg <= ID_EX_R.MReg;
+    EX_MEM_R.Rs2 <= Rs2_fwd;
+    EX_MEM_R.RegWrite <= ID_EX_R.RegWrite;
+    EX_MEM_R.rd <= ID_EX_R.rd;
   end
 
   // MEM_WB
   //always_ff @(posedge clk) begin
   always @ (posedge clk) begin 
-    if (rst) 
-      MEM_WB_R <= 0;
-    else begin
-      MEM_WB_R.Rd <= Rd;
-      MEM_WB_R.RegWrite <= EX_MEM_R.RegWrite;
-      MEM_WB_R.rd <= EX_MEM_R.rd;
-    end
+    MEM_WB_R.Rd <= Rd;
+    MEM_WB_R.RegWrite <= EX_MEM_R.RegWrite;
+    MEM_WB_R.rd <= EX_MEM_R.rd;
   end
 
 endmodule
