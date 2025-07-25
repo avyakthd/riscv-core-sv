@@ -84,7 +84,22 @@ This section described the rationale behind the set of chosen instructions to ve
 
 The [testbench](CodeFiles/testbench.sv) outputs are designed to highlight important pipeline signals per instruction cycle, allowing step-by-step tracing of register values, forwarding decisions, stalls, and flushes.
 
-// work in progress...
+Note that all `RegMem[i]` and `DataMem[i]` have been initialised to `i` @ `t = 0`.
+
+- **`addi r1, r0, 11;`** → r1 = r0 + 11 → 11. No hazards.
+- **`add r3, r1, r2;`** → Checks for `EX_MEM_R` data forwarding; r3 = 13.
+- **`add r4, r3, r1;`** → Checks both `EX_MEM_R` and `MEM_WB_R` data forwarding to different inputs; r4 = 24.
+- **`sw r4, 12(r0);`** → `mem[12 + r0]` = `mem[12]` = r4 = 24.
+- **`lw r5, 12(r0);`** → r5 = `mem[12 + r0]` = `mem[12]` = 24.
+- **`beq r5, r6, 12;`** → Source register rs2 (`r5`) matches `LW`'s destination rd (`r5`) → Stall, then proceed. r5 = 24, r6 = 6 → `branch_taken` = 0 (not taken).
+- **`addi r7, r0, 8;`** → Executes since branch is not taken; r7 = 8.
+- **`ori r7, r0, 9;`** → Executes since branch is not taken; r7 = 9.
+- **`beq r4, r4, 12; (B1)`** or **`beq r4, r0, 12; (B2)`** → Test taken/not taken branches. B1 is taken; B2 is not. Modify `InstrMem` code to switch between cases.
+- **`add r0, r1, r1;`** → NOP. Executes if B2 (not taken) or after `J`; skipped if B1 (taken). Tests r0 write (should remain unchanged, as r0 is hardwired to 0).
+- **`j -4;`** or **`jal r0, -4;`** → Jumps back to the previous NOP instruction.
+- **`add r8, r8, r8;`** → Executes if B1 (taken); skipped otherwise.
+
+This sequence comprehensively tests forwarding paths, stalls, flushes, branch resolution, and register behaviors.
 
 ## The Modules
 All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles)).
@@ -182,7 +197,10 @@ The testbench is designed to display all the relevant values of each instruction
 ```Verilog
 $display("[%0d] rs1 = %0h, rs2 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uTop.ID_EX_R.rs2,  uTop.ID_EX_R.rd);
 ```
-For `I-Type` and `S-Type` instructions, replace `rs2` with `imm32` (*immediate*), and `uTop.ID_EX_R.rs2` with `uTop.ID_EX_R.imm32`.
+For `I-Type` and `S-Type` instructions, replace `rs2` with `imm32` (*immediate*), and `uTop.ID_EX_R.rs2` with `uTop.ID_EX_R.imm32`, or **replace** the line above with the following code-snippet:
+```Verilog
+$display("[%0d] rs1 = %0h, imm32 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uTop.ID_EX_R.imm32,  uTop.ID_EX_R.rd);
+```
 - To view `Register_File` contents:  
   Set `rf_debug_addr_w` to the `RegMem` index you would like to access. The corresponding output would be displayed by `rf_debug_data_w`.
 - Similarly, to view `DataFile` contents:  
