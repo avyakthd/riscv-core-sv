@@ -138,7 +138,28 @@ This module checks the dependencies between the source-registers (`rs1`, `rs2`) 
 
 > Purely Combinational
 ### `ALU.sv`
+This module performs arithemtic- and logical-operations based on `ALU_Op`. It takes inputs from:
+- `ID_EX_R`: `Rs1`, `Rs2_imm32` (multiplexed based on whether `Rs2` or `imm32` is needed), `ocpode`, and `is_R`
+- `EX_MEM_R`, `MEM_WB_R`: `ALU_Result` for Data-Forwarding
+- `Forwarding_Unit`: forwarding-signals (`ForwardA`/`ForwardB`)
 
+The inputs are selected based on the forwarding-signals, which resolve data-hazards by choosing the most recent valid operand from the pipeline-registers. The module then computes `ALU_Result` and `is_equal`, which is used by the PC-control unit to determine whether or not the branch is taken (if `BEQ`).
 
+**Special Handling**: for `S-Type` instructions, although the forwarding-signal might indicate forwarding for the second `ALU` input (`ForwardB`), we *must* choose the *immediate* value, and not the register `R[rs2]`. To avoid incorrect forwarding, this module includes an override forwarding and select the *immediate* value when needed.
+
+> Purely combinational
 ### `DataFile.sv`
+This module takes the following inputs from the `EX_MEM_R` pipeline-register:
+- `ALU_Result`: serves as the memory-address in case of `SW`/`LW`, and is forwarded to `MEM_WB_R` if not accessing the memory.
+- `DataMem_RW`: Read/Write control signal (`Write` if Store, `Read` if Load)
+- `Rs2`: data from the `R[rs2]` register; for `S-Type` instructions
+- `MReg`: determines whether the value written back to `Register_File` (`Rd`) is from `DataMem` or the `ALU_Result`
+- `rd`: destination-register index
+
+Similar to `Register_File`, the *read* operation is purely combinational, whereas the *write* operation is triggered at `posedge clk`, if `DataMem_RW == Write`.
+
+The debug-signal `debug_addr_DF`, and its output `debug_data_DF` would help us evaluate our design.
+
+> Read: Purely Combinational  
+> Write: Clock-triggered
 ### `testbench.sv`
