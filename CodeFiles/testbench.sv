@@ -13,14 +13,9 @@ module tb;
   //    $dumpvars(0, tb); // 0 -> dump every signal in the module 
   //  end
 
-  logic clk, rst;
+  logic clk;
+  initial clk = 0;
   always #1 clk = ~clk; 
-  initial begin
-    clk = 0; 
-    rst = 0;
-    #1 rst = 1;
-    #1 rst = 0;
-  end
 
   Top uTop (.clk(clk), 
             .debug_addr_RF(rf_debug_addr_w), 
@@ -83,8 +78,6 @@ module tb;
   // READ THE DOCUMENTATION! //
   // ----------------------- //
 
-  always_ff @(posedge rst)
-    $display("[%0d] (posedge rst)", $time);
   // testcases
   initial begin
     #0; // vary this in steps of 2 to follow the outputs of the various instructions (or view the waveform)
