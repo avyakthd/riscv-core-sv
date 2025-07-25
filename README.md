@@ -117,9 +117,20 @@ This module generates the control signal `ALU_Op` based on `opcode`, `funct3`, a
 
 > Purely combinational
 ### `imd_gen.sv`
+This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, and `J-Type` instructions, sign-extends them to `32b`, and gives a single output based on the opcode (e.g., only `imm_b`, if `opcode` = `OP_B`). 
 
+> Purely combinational
 ### `Register_File.sv`
+This module initialises 32 x `32b` registers, as per the convention in RV32I. The read operation is purely combinational, whereas the write operation is triggered at posedge clk, if the RegWrite signal is enabled. The debug-signal `debug_addr_RF`, and its output `debug_data_RF` would help us evaluate our design.
+
+> Read: Purely Combinational
+> Write: Clock-triggered
 ### `Hazard_Unit.sv`
+A Load-use (`RAW`) hazard occurs when a `Load` instruction is followed by any instruction that depends on its destination register (`rd`). This cannot be resolved by simple Data-Forwarding, and would require a `Stall`, during which the `Load` proceeds through the pipeline, while the dependent instruction is halted. 
+
+This module implements that hazard-detection by asserting `Stall` when the `rd` from `ID_EX_R` matches with the source registers from `IF_ID_R`
+
+> Purely Combinational
 ### `Forwarding_Unit.sv`
 ### `ALU.sv`
 ### `DataFile.sv`
