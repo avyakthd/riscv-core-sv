@@ -65,7 +65,7 @@ Can it be done, however? Absolutely- [B2 for the RV32I ISA](https://github.com/a
 
 - covers `J`. This is actually the instruction format for `JAL` (Jump and Link), but if we set the value of the link-register (`rd`) to `0`, i.e., if the link-register is `r0`, then it would be interpreted as an unconditional-branch by the compiler.
 
- 1. `opcode` → `7’b1101111`
+ 1. `opcode` → `7’b1101111` 
  2. No `funct3`
 
 - The placement of bits, again, was to reuse every possible pre-existing connection (from `U-Type`, this time):
@@ -80,9 +80,13 @@ This gives us a range of ±1MB of locations to access.
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
 ## The Modules
+All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles))
 ### `design.sv`
+This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`
 ### `riscv_pkg.sv`
+This defines various `enums` and `types`, along with the pipeline-registers, for convenience and increased readability throughout the code base.
 ### `PC.sv`
+This instantiates the `PC` (Program Counter), and updates it **// continue from here**
 ### `InstrFile.sv`
 ### `Top.sv`
 ### `Control_Unit.sv`
