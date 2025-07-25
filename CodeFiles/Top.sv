@@ -4,7 +4,6 @@ import riscv_pkg::*;
 
 module Top (
   input clk,
-  input rst,
   // FOR DEBUGGING //
   input reg_idx_t debug_addr_RF,
   input logic `reg_size debug_addr_DF, 
@@ -55,7 +54,6 @@ module Top (
 
   PC uPC (
     .clk(clk),
-    .rst(rst),
     .Stall(Stall),
     .PC_in(PC_next),
     .PC_Out(PC_Out)
@@ -99,7 +97,6 @@ module Top (
 
   Register_File uRF (
     .clk(clk),
-    .rst(rst),
     .RegWrite(MEM_WB_R.RegWrite), 
     .rd(MEM_WB_R.rd), 
     .Rd(MEM_WB_R.Rd),
@@ -202,7 +199,7 @@ module Top (
 
   //IF_ID
   //always_ff @ (posedge clk) begin -> not working for some reason :(
-  always @ (posedge clk or posedge rst) begin 
+  always @ (posedge clk) begin 
     if (rst)
       IF_ID_R <= 0;
     else if (Flush) 
@@ -215,7 +212,7 @@ module Top (
 
   // ID_EX
   //always_ff @(posdege clk) begin
-  always @ (posedge clk or posedge rst) begin 
+  always @ (posedge clk) begin 
     if (rst)
       ID_EX_R <= 0;
     else if (Flush || Stall) begin // Flush takes priority over Stall
@@ -243,7 +240,7 @@ module Top (
 
   // EX_MEM
   //always_ff @(posedge clk) begin
-  always @ (posedge clk or posedge rst) begin 
+  always @ (posedge clk) begin 
     if (rst) 
       EX_MEM_R <= 0;
     else begin
@@ -258,7 +255,7 @@ module Top (
 
   // MEM_WB
   //always_ff @(posedge clk) begin
-  always @ (posedge clk or posedge rst) begin 
+  always @ (posedge clk) begin 
     if (rst) 
       MEM_WB_R <= 0;
     else begin
