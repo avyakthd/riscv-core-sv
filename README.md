@@ -117,7 +117,7 @@ This module generates the control signal `ALU_Op` based on `opcode`, `funct3`, a
 
 > Purely combinational
 ### `imd_gen.sv`
-This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, and `J-Type` instructions, sign-extends them to `32b`, and gives a single output based on the opcode (e.g., only `imm_b`, if `opcode` = `OP_B`). 
+This helper-module extracts the *immediate* values from the `I-`, `S-`, `B-`, and `J-Type` instructions, sign-extends them to `32b`, and gives a single output based on the opcode (e.g., only `imm_b`, if `opcode == OP_B`). 
 
 > Purely combinational
 ### `Register_File.sv`
@@ -163,3 +163,22 @@ The debug-signal `debug_addr_DF`, and its output `debug_data_DF` would help us e
 > Read: Purely Combinational  
 > Write: Clock-triggered
 ### `testbench.sv`
+This module instantiates `Top.sv` and generates the global clock-signal (`clk`).
+The simulation outputs can be viewed graphically:
+- on *EDAPlayground* by enabling `Tools & Simulators -> Open EPWave after Run`, or
+- by using any waveform-viewer (e.g., *GTKWave*) and opening the generated waveform-file
+
+The testbench is designed to display all the relevant values of each instruction in a step-by-step, readable format. 
+#### Usage Notes
+- Vary the initial delay (currently `#0`) in steps of 2 to view the outputs of the next instruction. For example, to view the 3rd instruction, set the delay to `#4`.
+- This `$display` line prints the register-indices for the current instruction:
+```Verilog
+$display("[%0d] rs1 = %0h, rs2 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uTop.ID_EX_R.rs2,  uTop.ID_EX_R.rd);
+```
+For `I-Type` and `S-Type` instructions, replace `rs2` with `imm32` (*immediate*), and `uTop.ID_EX_R.rs2` with `uTop.ID_EX_R.imm32`.
+- To view `Register_File` contents:
+  Set `rf_debug_addr_w` to the `RegMem` index you would like to access. The corresponding output would be displayed by `rf_debug_data_w`.
+- Similarly, to view `DataFile` contents:
+  Set `df_debug_addr_w` to the `DataMem` index you would like to access. The corresponding output would be displayed by `debug_data_w`. Note that in the code these are currently `rf_debug_addr_w` and `rf_debug_data_w`- change them if needed.
+
+In case you are unable to follow this, the `testbench.sv` file includes these instructions inline comments beside the sections that you might need to tweak.
