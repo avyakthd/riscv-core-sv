@@ -79,6 +79,13 @@ This gives us a range of ±1MB of locations to access.
 
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
+## Instruction Flow and Expected Behaviour
+This section described the rationale behind the set of chosen instructions to verify the pipeline-implementation, which cover arthimetic- and logical-operations, `Load`/`Store` hazards, branching (with +ve and -ve offsets), forwarding, stalls, and special cases like writing to `r0`
+
+The [testbench](CodeFiles/testbench.sv) outputs are designed to highlight important pipeline signals per instruction cycle, allowing step-by-step tracing of register values, forwarding decisions, stalls, and flushes.
+
+// work in progress...
+
 ## The Modules
 All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles)).
 ### `design.sv`
@@ -176,9 +183,9 @@ The testbench is designed to display all the relevant values of each instruction
 $display("[%0d] rs1 = %0h, rs2 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uTop.ID_EX_R.rs2,  uTop.ID_EX_R.rd);
 ```
 For `I-Type` and `S-Type` instructions, replace `rs2` with `imm32` (*immediate*), and `uTop.ID_EX_R.rs2` with `uTop.ID_EX_R.imm32`.
-- To view `Register_File` contents:
+- To view `Register_File` contents:  
   Set `rf_debug_addr_w` to the `RegMem` index you would like to access. The corresponding output would be displayed by `rf_debug_data_w`.
-- Similarly, to view `DataFile` contents:
+- Similarly, to view `DataFile` contents:  
   Set `df_debug_addr_w` to the `DataMem` index you would like to access. The corresponding output would be displayed by `debug_data_w`. Note that in the code these are currently `rf_debug_addr_w` and `rf_debug_data_w`- change them if needed.
 
 In case you are unable to follow this, the `testbench.sv` file includes these instructions inline comments beside the sections that you might need to tweak.
