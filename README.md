@@ -7,7 +7,7 @@
 	- Branches: `BEQ`, `J` (Unconditional Branch)
 - To implement Data-forwarding from both the `EX-MEM` and `MEM-WB` stages to reduce stalls and improve throughput
 - To implement a Hazard-unit to prevent Load-use (`RAW`) hazards following `LW` instructions not solved by Data-forwarding
-- To provide a [sample testbench](CodeFiles/testbench.sv) to verify the core on a comprehensive instruction set, with step-by-step output for easy understanding. More on this [later](#testbenchsv)
+- To provide a [sample testbench](CodeFiles/testbench.sv) to verify the core on a comprehensive instruction set, with step-by-step output for easy understanding. More on this [later](#testbenchsv).
 
 ## The ISA
 I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement the mentioned instructions.
