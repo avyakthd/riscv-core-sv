@@ -9,7 +9,7 @@ module ALU (
     input alu_op_e ALU_Op,
     // for forwarding
     input fwd_e ForwardA, ForwardB,
-    input `reg_size ex_mem_A, mem_wb_A, ex_mem_B, mem_wb_B,
+    input `reg_size ex_mem, mem_wb,
     // to PC
     output logic is_equal,		// not passed thru a pipeline-reg
     `// to PC, EX_MEM
@@ -20,8 +20,8 @@ module ALU (
   always_comb begin
     case (ForwardA)
       from_Reg   : ALU_inA = Rs1;
-      from_ex_mem: ALU_inA = ex_mem_A;
-      from_mem_wb: ALU_inA = mem_wb_A;
+      from_ex_mem: ALU_inA = ex_mem;
+      from_mem_wb: ALU_inA = mem_wb;
     endcase
     
     if (opcode == OP_S)
@@ -29,8 +29,8 @@ module ALU (
     else
       case (ForwardB)
           from_Reg   : ALU_inB = Rs2_imm32;
-          from_ex_mem: ALU_inB = ex_mem_B;
-          from_mem_wb: ALU_inB = mem_wb_B;
+          from_ex_mem: ALU_inB = ex_mem;
+          from_mem_wb: ALU_inB = mem_wb;
       endcase
   end
   
