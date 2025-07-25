@@ -80,18 +80,44 @@ This gives us a range of ±1MB of locations to access.
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
 ## The Modules
-All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles))
+All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles)).
 ### `design.sv`
-This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`
+This is merely an aggregate of all the modules I've used, and is the only module that EDAPlayground compiled by default, along with `testbench.sv`.
 ### `riscv_pkg.sv`
 This defines various `enums` and `types`, along with the pipeline-registers, for convenience and increased readability throughout the code base.
 ### `PC.sv`
-This instantiates the `PC` (Program Counter), and updates it **// continue from here**
+This instantiates the `PC` (Program Counter), and updates it with the input `PC_in` it gets from `Top.sv` at every `posedge clk`, if `Stall` is not asserted.
+
+> Clock-triggered
 ### `InstrFile.sv`
+This instantiates the byte-addressable Instruction-Memory, which outputs a `32b` instruction indexed by `PC_Out`. 
+
+> Purely combinational
 ### `Top.sv`
+This module:
+- declares all the pipeline-registers (defined in `riscv_pkg.sv`), and coordinates their updates (`posedge clk` triggered).
+- instantiates all design files.
+- decodes the Instruction received from `IF_ID_R`, generating `rs1`, `rs2`, `rd`, `opcode`, `funct3`, `funct7`.
+- selects between `Rs2` and `imm32` for the second `ALU` input based on the `is_R` signal.
+- implements the logic for pipeline-flushing (`Flush`), and `PC` update/branching.
+  
+> Clock-triggered
 ### `Control_Unit.sv`
+This module generates the following control signals:
+
+`RegWrite` : `Register-File` write-enable signal; set to `0` if `Stall` is asserted.
+`is_R` : selects between `imm32` or `R[rs2]` for the second `ALU` input.
+`PC_sel`: PC-MUX selector (`PC_4`/`PC_BEQ`/`PC_J`), determined based on the `opcode`.
+`DataMem_RW`: Data-Memory Operation (`Read`/`Write`); set to `Read` is `Stall` is asserted.
+`MReg` : determines whether the input to the write-port of `Register_File` would be from `DataMem` or `ALU`.
+
+> Purely combinational
 ### `ALU_Ctl.sv`
+This module generates the control signal `ALU_Op` based on `opcode`, `funct3`, and `funct7` (only for `ADD`/`SUB`). This operation can be `ADD`, `SUB`, `AND`, `OR`, `XOR`. 
+
+> Purely combinational
 ### `imd_gen.sv`
+
 ### `Register_File.sv`
 ### `Hazard_Unit.sv`
 ### `Forwarding_Unit.sv`
