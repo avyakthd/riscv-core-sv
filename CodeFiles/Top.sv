@@ -120,10 +120,8 @@ module Top (
     .ALU_Op(ID_EX_R.ALU_Op),
     .ForwardA(ForwardA), 
     .ForwardB(ForwardB),
-    .ex_mem_A(EX_MEM_R.ALU_Result), 
-    .mem_wb_A(MEM_WB_R.Rd), 
-    .ex_mem_B(EX_MEM_R.ALU_Result), 
-    .mem_wb_B(MEM_WB_R.Rd), 
+    .ex_mem(EX_MEM_R.ALU_Result), 
+    .mem_wb(MEM_WB_R.Rd), 
     .is_equal(is_equal),
     .ALU_Result(ALU_Result)
   );
