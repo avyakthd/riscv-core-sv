@@ -2,7 +2,7 @@
  import riscv_pkg::*;
 
 module Register_File (  
-  input clk, rst,
+  input clk,
   // from MEM_WB
   input RegWrite, 
   input reg_idx_t rd,               // "r" denotes index             
