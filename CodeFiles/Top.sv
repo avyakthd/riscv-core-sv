@@ -15,7 +15,7 @@ module Top (
   /* PIPELINE REGISTER DECLARATION */
   /* ----------------------------- */ 
 
-  IF_ID_t 	IF_ID_R;
+  IF_ID_t   IF_ID_R;
   ID_EX_t   ID_EX_R;
   EX_MEM_t  EX_MEM_R;
   MEM_WB_t  MEM_WB_R;
@@ -27,7 +27,7 @@ module Top (
   logic `reg_size PC_Out, Instr_Out;
   logic `reg_size PC_next, PC_4, PC_branch;
   logic branch_taken;
-  logic Stall; // for the first instruction
+  logic Stall, Stall_eff; // for the first instruction
   opcode_e opcode;
   funct3_e funct3;
   funct7_e funct7;
@@ -56,7 +56,7 @@ module Top (
 
   PC uPC (
     .clk(clk),
-    .Stall(Stall),
+    .Stall(Stall_eff),
     .PC_in(PC_next),
     .PC_Out(PC_Out)
   );
@@ -170,6 +170,8 @@ module Top (
     ((ID_EX_R.PC_sel == PC_BEQ) & (is_equal)) || 
     (ID_EX_R.PC_sel == PC_J);
 
+  assign Stall_eff = Stall & (~Flush); // Flush takes priority over Stall
+
   // FORWARDING LOGIC FOR Rs2//
   always_comb
     case (ForwardS)
@@ -218,7 +220,7 @@ module Top (
   always @ (posedge clk) begin 
     if (Flush) 
       IF_ID_R <= 0;
-    else if (~Stall) begin
+    else if (~Stall_eff) begin
       IF_ID_R.PC <= PC_Out;
       IF_ID_R.instr32 <= Instr_Out;
     end
