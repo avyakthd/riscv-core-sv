@@ -56,7 +56,7 @@ module Top (
 
   PC uPC (
     .clk(clk),
-    .Stall(Stall_eff),
+    .PCWrite(~Stall_eff),
     .PC_in(PC_next),
     .PC_Out(PC_Out)
   );
