@@ -122,7 +122,14 @@ This module:
 - decodes the Instruction received from `IF_ID_R`, generating `rs1`, `rs2`, `rd`, `opcode`, `funct3`, `funct7`.
 - selects between `Rs2` and `imm32` for the second `ALU` input based on the `is_R` signal.
 - implements the logic for pipeline-flushing (`Flush`), and `PC` update/branching.
-  
+
+**Note**: `Flush` and `Stall` in pipeline-registers
+- The `Flush` signal takes priority over the `Stall` signal. A `Stall` merely freezes the instruction currently in the `IF_ID_R` register, and inserts a `NOP`-bubble further down, since the value required for the current instruction isn't available yet. However, a `Flush` discards the current `IF_ID_R` since it is on the wrong path of execution.
+- The `PC` update logic uses `Stall_eff` = `Stall & ~Flush`. `PC` would update if `Stall_eff` is not asserted, i.e., if `Stall = 0` or if `Flush = 1`.
+- The `IF_ID_R` would get flushed if `Flush = 1`, and would update to the new value if `Stall_eff` is not asserted (similar to `PC`)
+- The `ID_EX_R` would insert a `NOP`-bubble if `Flush` or `Stall` are asserted. This is done by neutralising all the *Write-enable* controls: `DataMem_RW = Read`, `RegWrite = 0`, `ID_EX_R.rd = 0`.
+- We also set `ID_EX_R.PC_sel = PC_4` to avoid *partial-bubbles*, where the `PC_sel` line carries the value from the previous instruction (suppose `PC_BEQ`), and propagates the wrong control signal through the `NOP` stage, resulting in an incorrect `PC` update.
+
 > Clock-triggered
 ### `Control_Unit.sv`
 This module generates the following control signals:
