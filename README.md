@@ -101,7 +101,7 @@ Note that all `RegMem[i]` and `DataMem[i]` have been initialised to `i` @ `t = 0
 - **`add r8, r8, r8;`** → Executes if B1 (taken); skipped otherwise.
 
 ## The Modules
-Attached below is a high-level overview of the processor's datapath. The [`.drawio` XML file](Images/pipeline_diagram.drawio) is available in case you wish to use it.
+Attached below is a high-level overview of the processor's datapath. The `.drawio` XML file is available [here](Images/pipeline_diagram.drawio) in case you wish to use it.
 ![pipeline-datapath](Images/pipeline_diagram.jpg)
 All modules can be run and tested on [EDAPlayground](https://edaplayground.com/x/YtNt), or using any software of your choice (code available [here](CodeFiles)).
 ### `design.sv`
