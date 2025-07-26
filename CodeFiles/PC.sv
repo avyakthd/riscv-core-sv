@@ -4,7 +4,7 @@ import riscv_pkg::*;
 module PC (
   input clk,
   // from Hazard Unit
-  input Stall,
+  input PCWrite,
   // from Top
   input `reg_size PC_in,
   // to IF_ID
@@ -15,7 +15,7 @@ module PC (
   assign PC_Out = PC; 
   
   always_ff @ (posedge clk) begin
-    if (~Stall)
+    if (PCWrite)
       PC <= PC_in;
   
 endmodule
