@@ -7,7 +7,7 @@
 	- Branches: `BEQ`, `J` (Unconditional Branch)
 - To implement Data-forwarding from both the `EX-MEM` and `MEM-WB` stages to reduce stalls and improve throughput
 - To implement a Hazard-unit to prevent Load-use (`RAW`) hazards following `LW` instructions not solved by Data-forwarding
-- To provide a [sample testbench](CodeFiles/testbench.sv) to verify the core on a comprehensive instruction set, with step-by-step output for easy understanding. More on this [later](#testbenchsv).
+- To provide a [sample testbench](#testbenchsv) to verify the core on a comprehensive instruction set, with step-by-step output for easy understanding. More on this [later](#testbenchsv).
 
 ## The ISA
 I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement the mentioned instructions.
@@ -58,7 +58,7 @@ I shall be using the `R-`, `I-`, `S-`, `B-`, and `J-Type` formats to implement t
 This gives us `13b`, i.e., ±4kB of locations to access. This happens to be the page-size in a standard OS, so the designers decided not to include another Branch (`B2`) for the *RV32I* ISA, separately, in an attempt to use the same core for both the compressed (`16b`) and `32b` ISAs. 
 Can it be done, however? Absolutely- [B2 for the RV32I ISA](https://github.com/avyakthd/riscv-core-sv/tree/single-cycle-working/B2_instr.md)
 
-- Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignemnt
+- Sample Instruction: `beq r5, r5, imm_b`. `imm_b` is of size `[12:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
 ### J-Type
 ![J-Type Instruction Encoding](Images/U_J_Type.png)
@@ -80,9 +80,10 @@ This gives us a range of ±1MB of locations to access.
 - Sample instruction: `j imm_j`. `imm_j` is of size `[20:1]`, but undergoes an implicit `<<1` for `16b`-alignment
 
 ## Instruction Flow and Expected Behaviour
-This section described the rationale behind the set of chosen instructions to verify the pipeline-implementation, which cover arthimetic- and logical-operations, `Load`/`Store` hazards, branching (with +ve and -ve offsets), forwarding, stalls, and special cases like writing to `r0`
+The following instruction sequence is chosen to check all key pipeline behaviors:  
+arithmetic, logic, load/store hazards, data forwarding, stalls, branching (positive/negative offsets), pipeline flushes, and corner cases like writing to `r0`.
 
-The [testbench](CodeFiles/testbench.sv) outputs are designed to highlight important pipeline signals per instruction cycle, allowing step-by-step tracing of register values, forwarding decisions, stalls, and flushes.
+The [testbench](#testbenchsv) displays step-by-step pipeline signals for each instruction, making it easy to trace register-values and control-decisions.
 
 Note that all `RegMem[i]` and `DataMem[i]` have been initialised to `i` @ `t = 0`.
 
@@ -98,8 +99,6 @@ Note that all `RegMem[i]` and `DataMem[i]` have been initialised to `i` @ `t = 0
 - **`add r0, r1, r1;`** → NOP. Executes if B2 (not taken) or after `J`; skipped if B1 (taken). Tests r0 write (should remain unchanged, as r0 is hardwired to 0).
 - **`j -4;`** or **`jal r0, -4;`** → Jumps back to the previous NOP instruction.
 - **`add r8, r8, r8;`** → Executes if B1 (taken); skipped otherwise.
-
-This sequence comprehensively tests forwarding paths, stalls, flushes, branch resolution, and register behaviors.
 
 ## The Modules
 Attached below is a high-level overview of the processor's datapath. The `.drawio` XML file is available in [Images](Images) in case you wish to use it.
@@ -216,4 +215,4 @@ $display("[%0d] rs1 = %0h, imm32 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uT
   Set `df_debug_addr_w` to the `DataMem` index you would like to access. The corresponding output would be displayed by `debug_data_w`. Note that in the code these are currently `rf_debug_addr_w` and `rf_debug_data_w`- change them if needed.
 - The `Expected Value = %0d` in the last line would currently be set to `32'd11`. Update that with the expected register-value (if any) for each instruction.
 
-In case you are unable to follow this, the `testbench.sv` file includes these instructions inline comments beside the sections that you might need to tweak.
+In case you are unable to follow this, the [`testbench.sv`](CodeFiles/testbench.sv) file includes these instructions inline comments beside the sections that you might need to tweak.
