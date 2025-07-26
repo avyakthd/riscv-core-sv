@@ -212,5 +212,6 @@ $display("[%0d] rs1 = %0h, imm32 = %0d, rd = %0d", $time,  uTop.ID_EX_R.rs1,  uT
   Set `rf_debug_addr_w` to the `RegMem` index you would like to access. The corresponding output would be displayed by `rf_debug_data_w`.
 - Similarly, to view `DataFile` contents:  
   Set `df_debug_addr_w` to the `DataMem` index you would like to access. The corresponding output would be displayed by `debug_data_w`. Note that in the code these are currently `rf_debug_addr_w` and `rf_debug_data_w`- change them if needed.
+- The `Expected Value = %0d` in the last line would current be set to `32'd11`. Update that with the expected register-value (if any) for each instruction.
 
 In case you are unable to follow this, the `testbench.sv` file includes these instructions inline comments beside the sections that you might need to tweak.
