@@ -108,7 +108,7 @@ module tb;
     // view Register_File[rf_debug_addr_w]. 
     // If you want to view DataMem[df_debug_addr_w], then change:
     // "rf_debug_addr_w" to "df_debug_addr_w", and
-    // "rf_dbeug_data_w" to "df_debug_data_w"
+    // "rf_debug_data_w" to "df_debug_data_w"
     rf_debug_addr_w = 0;
     $display("[%0d] Expected Value: %0d, Actual Value: %0d", $time, 32'd0, rf_debug_data_w);
     $display(""); 
